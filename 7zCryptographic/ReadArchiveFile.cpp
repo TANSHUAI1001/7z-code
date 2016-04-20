@@ -4,7 +4,7 @@
 #include <iostream>
 #include <vector>
 #include "ReadProperties.h"
-#include <zlib.h>
+//#include <zlib.h>
 #include "Crc32.h"
 using namespace std;
 //#define MAGIC_7Z '0x370x7a\xbc\xaf\x27\x1c'
@@ -69,6 +69,7 @@ string get_b2hex(const unsigned char * source,int len)
 }
 bool readBoolean(long curPos, unsigned char *pBuff,FILE *pFile){
     //
+	return false;
 }
 long readHandle64Bit(long curPos,unsigned char * pBuf,FILE *pFile){
     cout<<"handle 64 bit!"<<endl;
@@ -97,7 +98,6 @@ long readHandle64Bit(long curPos,unsigned char * pBuf,FILE *pFile){
 //        realCut |= cut;
 //    }
 //    highPart = curPos & realCut;
-
 //    highPart = curPos & (cut - 1);
 
     for(int num = 1; num < 8; num++){
@@ -251,12 +251,20 @@ int ReadByPath(char *fp,CheckData *&pCd)
     long tailOffset = (endPosition - tailHeaderBegin);
     cout<<"tailOffset dec = "<<dec<<tailOffset<<endl;
     fseek(pFile,tailHeaderBegin,SEEK_SET);
+#ifdef _MSC_VER
+	unsigned char *tailBuffer;
+	tailBuffer = (unsigned char *)malloc(tailOffset);
+#else
     unsigned char tailBuffer[tailOffset];
+#endif
     fread(tailBuffer,1,tailOffset,pFile);
     const unsigned char *pTailBuf;
     pTailBuf = tailBuffer;
+#ifdef _MSC_VER
+	cout<<"tail hex "<<get_b2hex(pTailBuf,tailOffset).c_str()<<endl;
+#else
     cout<<"tail hex "<<get_b2hex(pTailBuf,tailOffset)<<endl;
-
+#endif
     fseek(pFile,tailHeaderBegin,SEEK_SET);
     long k = 0;
     IntChar32 streamBuf;
@@ -419,7 +427,11 @@ int ReadByPath(char *fp,CheckData *&pCd)
                             curPos = int(buffer[0]);
                             propertiesSize = readHandle64Bit(curPos,pBuff,pFile);
                             fread(buffer,1,propertiesSize,pFile);
+#ifdef _MSC_VER
+							cout<<"properties:"<<get_b2hex(pBuff,propertiesSize).c_str()<<endl;
+#else
                             cout<<"properties:"<<get_b2hex(pBuff,propertiesSize)<<endl;
+#endif
                             if(streamsData.pFolders[i].pCoders[i].propertiesSize != 0 ) continue;
                             streamsData.pFolders[i].pCoders[i].propertiesSize = propertiesSize;
                             streamsData.pFolders[i].pCoders[j].pProp = new unsigned char[propertiesSize];

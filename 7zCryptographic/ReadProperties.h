@@ -11,8 +11,9 @@ struct Coders{
     long method;
     long numInstream;
     long numOutstream;
-    long propertiesSize = 0;
+    long propertiesSize;
     unsigned char *pProp;
+	Coders():propertiesSize(0){};
     ~Coders(){
         if(pProp){
             delete pProp;
@@ -66,7 +67,7 @@ struct StreamsData{
     }
 };
 struct CheckData{
-    long unpackSize = 0;
+    long unpackSize;
     long numCyclesPower;
     long saltSize;
     std::string salt;
@@ -79,6 +80,7 @@ struct CheckData{
 //    std::string cipher;
     unsigned char *cipher;
     char passwd[128];
+	CheckData():unpackSize(0){};
 //    ~CheckData(){
 //        if(cipher){
 //            delete cipher;

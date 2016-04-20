@@ -9,7 +9,11 @@
 #include <openssl/crypto.h>
 #include <stdio.h>
 #include <assert.h>
+#ifdef _MSC_VER
+#include <malloc.h>
+#else
 #include <mm_malloc.h>
+#endif 
 #include "Crc32.h"
 
 #define GetUi32(p) (*(const uint32 *)(p))
@@ -27,7 +31,11 @@ CheckData cd;
 CheckData *pCd;
 
 void init(){
+#ifdef _MSC_VER
+	char path[] = "C:/Users/shuai/Desktop/fmt_main1.7z";
+#else
     char path[] = "/Users/shuai/Desktop/filesfor7z/LZMA_FileName_Password.7z";
+#endif
 //    char path[] = "/Users/shuai/Desktop/filesfor7z/fmt_main1.7z";
 //    char path[] = "/Users/shuai/Desktop/filesfor7z/LZMA2_FileName_Password.7z";
 
@@ -324,8 +332,12 @@ int main(){
     if(AES_set_decrypt_key(key,256,&akey) < 0){
         fprintf(stderr,"AES_set_decrypt_key failed in crypt !\n");
     }
-
+#ifdef _MSC_VER
+	uint8 *out;
+	out = (uint8 *)malloc(cipherLen);
+#else
     uint8 out[cipherLen];
+#endif
     AES_cbc_encrypt(cipher,out,cipherLen,&akey,iv_arr,AES_DECRYPT);
     for(i = 0; i < cipherLen; i++){
         cout<<hex<<int(out[i])<<" ";
@@ -386,9 +398,12 @@ int main(){
 //    cout<<"pCd->unpackSize "<<pCd->unpackSize<<endl;
 //    crcc = _crc_out.crci;
 //    cout<<hex<<"crc "<<crcc<<endl;
-
+#ifdef _MSC_VER
+	free(out);
+#endif
     delete iv_arr;
     delete cipher;
     delete pwd;
+	system("pause");
     return 0;
 }
