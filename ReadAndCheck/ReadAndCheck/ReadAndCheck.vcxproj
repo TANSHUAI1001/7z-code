@@ -83,10 +83,21 @@
   <ItemGroup>
     <ClCompile Include="..\..\7zCryptographic\ReadArchiveFile.cpp" />
     <ClCompile Include="..\..\7zCryptographic\verification.cpp" />
+    <ClCompile Include="MyLzma.cpp" />
+    <ClCompile Include="UDecode.cpp" />
+    <ClCompile Include="Write2File.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\7z1514-src\CPP\Common\Defs.h" />
+    <ClInclude Include="..\..\..\7z1514-src\CPP\Common\MyBuffer.h" />
     <ClInclude Include="..\..\7zCryptographic\Crc32.h" />
     <ClInclude Include="..\..\7zCryptographic\ReadProperties.h" />
+    <ClInclude Include="7zTypes.h" />
+    <ClInclude Include="LzmaLib.h" />
+    <ClInclude Include="MyLzma.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="LzmaLib.lib" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

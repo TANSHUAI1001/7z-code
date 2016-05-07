@@ -67,26 +67,23 @@ struct StreamsData{
     }
 };
 struct CheckData{
-    long unpackSize;
+	bool aesCode;
+    long *pUnpackSize;
     long numCyclesPower;
     long saltSize;
     std::string salt;
     long ivSize;
-//    std::string iv;
     unsigned char * iv;
-    // (what type ?)crc
     int crc;
     long cipherLen;
-//    std::string cipher;
     unsigned char *cipher;
     char passwd[128];
-	CheckData():unpackSize(0){};
-//    ~CheckData(){
-//        if(cipher){
-//            delete cipher;
-//            cipher = NULL;
-//        }
-//    }
+
+	bool lzmaCode;
+	unsigned char *props;
+	int propSize;
+
+	CheckData():aesCode(false),lzmaCode(false){}
 };
 
 //#include "Crc32.h"

@@ -1,21 +1,26 @@
-﻿生成启动时间为 4/19/2016 3:24:11 PM。
+﻿生成启动时间为 5/7/2016 10:39:15 AM。
      1>项目“C:\Users\shuai\Desktop\cpp\ReadAndCheck\ReadAndCheck\ReadAndCheck.vcxproj”在节点 2 上(Build 个目标)。
      1>ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc110.pdb" /Gd /TP /analyze- /errorReport:prompt ..\..\7zCryptographic\ReadArchiveFile.cpp
-         ReadArchiveFile.cpp
-     1>c:\users\shuai\desktop\cpp\7zcryptographic\readarchivefile.cpp : warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
-     1>c:\users\shuai\desktop\cpp\7zcryptographic\readarchivefile.cpp(48): warning C4293: “<<”: Shift 计数为负或过大，其行为未定义
-     1>c:\users\shuai\desktop\cpp\7zcryptographic\readarchivefile.cpp(64): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-                 c:\program files (x86)\microsoft visual studio 11.0\vc\include\stdio.h(357) : 参见“sprintf”的声明
-     1>c:\users\shuai\desktop\cpp\7zcryptographic\readarchivefile.cpp(79): warning C4101: “cMASK”: 未引用的局部变量
-     1>c:\users\shuai\desktop\cpp\7zcryptographic\readarchivefile.cpp(175): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc110.pdb" /Gd /TP /analyze- /errorReport:prompt ..\..\7zCryptographic\verification.cpp
+         verification.cpp
+     1>c:\users\shuai\desktop\cpp\7zcryptographic\verification.cpp(69): warning C4996: 'scanf': This function or variable may be unsafe. Consider using scanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 11.0\vc\include\stdio.h(290) : 参见“scanf”的声明
+     1>c:\users\shuai\desktop\cpp\7zcryptographic\verification.cpp(84): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 11.0\vc\include\string.h(110) : 参见“strcpy”的声明
+     1>c:\users\shuai\desktop\cpp\7zcryptographic\verification.cpp(105): warning C4018: “<”: 有符号/无符号不匹配
+     1>c:\users\shuai\desktop\cpp\7zcryptographic\verification.cpp(115): warning C4018: “<”: 有符号/无符号不匹配
+     1>c:\users\shuai\desktop\cpp\7zcryptographic\verification.cpp(156): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
                  c:\program files (x86)\microsoft visual studio 11.0\vc\include\stdio.h(218) : 参见“fopen”的声明
        Link:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\shuai\Desktop\cpp\ReadAndCheck\Debug\ReadAndCheck.exe" /INCREMENTAL /NOLOGO /LIBPATH:"C:\openssl-0.9.8zh\out32dll" ssleay32.lib libeay32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\shuai\Desktop\cpp\ReadAndCheck\Debug\ReadAndCheck.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\shuai\Desktop\cpp\ReadAndCheck\Debug\ReadAndCheck.lib" /MACHINE:X86 Debug\ReadArchiveFile.obj
          Debug\verification.obj
+         Debug\MyLzma.obj
+         Debug\UDecode.obj
+         Debug\Write2File.obj
+         LzmaLib.lib
          ReadAndCheck.vcxproj -> C:\Users\shuai\Desktop\cpp\ReadAndCheck\Debug\ReadAndCheck.exe
      1>已完成生成项目“C:\Users\shuai\Desktop\cpp\ReadAndCheck\ReadAndCheck\ReadAndCheck.vcxproj”(Build 个目标)的操作。
 
 生成成功。
 
-已用时间 00:00:01.33
+已用时间 00:00:01.84

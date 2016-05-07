@@ -6,8 +6,8 @@
 #define INC_7ZCRYPTOGRAPHIC_CRC32_H
 
 #include <stdio.h>
-
-#include "memory.h"
+#include <memory.h>
+//#include "memory.h"
 //#include "crc32.h"
 //#include "memdbg.h"
 

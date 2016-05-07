@@ -21,6 +21,15 @@
     <ClCompile Include="..\..\7zCryptographic\verification.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="Write2File.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="UDecode.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="MyLzma.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\7zCryptographic\Crc32.h">
@@ -29,5 +38,25 @@
     <ClInclude Include="..\..\7zCryptographic\ReadProperties.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\7z1514-src\CPP\Common\Defs.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\7z1514-src\CPP\Common\MyBuffer.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="7zTypes.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="LzmaLib.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="MyLzma.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="LzmaLib.lib">
+      <Filter>源文件</Filter>
+    </Library>
   </ItemGroup>
 </Project>

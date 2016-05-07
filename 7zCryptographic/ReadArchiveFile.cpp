@@ -1,7 +1,7 @@
 //
 // Created by shuai on 16/4/8.
 //
-#include <iostream>
+//#include <iostream>
 #include <vector>
 #include "ReadProperties.h"
 //#include <zlib.h>
@@ -21,9 +21,10 @@ using namespace std;
 #define PROPERTY_FOLDER 0x0b
 #define CODER_UPACK_SIZE 0x0c
 #define MASK 0x80
-
+typedef unsigned long long int UInt64;
 typedef unsigned char BYTE;
 typedef unsigned int WORD;
+typedef unsigned int UInt32;
 typedef unsigned long DWORD;
 typedef unsigned long long FWORD;
 union IntChar32{
@@ -280,7 +281,7 @@ int ReadByPath(char *fp,CheckData *&pCd)
             fread(buffer,1,1,pFile);
             curPos = int(buffer[0]);
             // pack position
-            packPos = readHandle64Bit(curPos,pBuff,pFile);
+            packPos = readHandle64Bit(curPos,pBuff,pFile); // it really means dataOffset
             cout<<"packPos"<<packPos<<endl;
             /*
             if((curPos & MASK) == 0){
@@ -332,8 +333,9 @@ int ReadByPath(char *fp,CheckData *&pCd)
             curPos = int(buffer[0]);
             numStream = readHandle64Bit(curPos,pBuff,pFile);
             cout<<numStream<<endl;
-            streamsData.pPackSizes = new long[numStream];
+            streamsData.pPackSizes = new long[numStream + 1];
             long *packSize = streamsData.pPackSizes;
+			UInt64 sum = 0;
             fread(buffer,1,1,pFile);
             curPos = int(buffer[0]);
 //            cout<<"ID"<<curPos<<endl;
@@ -341,10 +343,13 @@ int ReadByPath(char *fp,CheckData *&pCd)
                 for(int i = 0; i < numStream;i++){
                     fread(buffer,1,1,pFile);
                     curPos = int(buffer[0]);
-                    packSize[i] = readHandle64Bit(curPos,pBuff,pFile);
+					packSize[i] = sum;
+					UInt64 psize = readHandle64Bit(curPos,pBuff,pFile);
+					sum += psize;
+                    //packSize[i] = readHandle64Bit(curPos,pBuff,pFile);
 //                    cout<<packSize[i]<<endl;
                 }
-
+				packSize[numStream] = sum;
                 cout<<"wait to write"<<endl;
                 fread(buffer,1,1,pFile);
                 curPos = int(buffer[0]);
@@ -375,14 +380,18 @@ int ReadByPath(char *fp,CheckData *&pCd)
             streamsData.pFolders = new Folders[numFolders];
             Folders *folders = streamsData.pFolders;
             long dataStreamIdx = 0x00;
+			UInt32 numCoderOutStream = 0;
             if(curPos == 0x00){
                 for(int i = 0; i < numFolders; i++){
+					UInt32 indexOfMainStream = 0;
+					UInt32 numPackStreams = 0;
                     fread(buffer,1,1,pFile);
                     curPos = int(buffer[0]);
                     long numCoders = readHandle64Bit(curPos,pBuff,pFile);
                     bool digestDefined = false;
-                    long totalIn = 0;
-                    long totalOut = 0;
+					/* long totalIn = 0;
+					long totalOut = 0;*/
+					UInt32 numInStream = 0; // outStream is out of the Folder's for circulation
                     streamsData.pFolders[i].pCoders = new Coders[numCoders];
                     Coders *coders = streamsData.pFolders[i].pCoders;
 
@@ -391,7 +400,7 @@ int ReadByPath(char *fp,CheckData *&pCd)
                     cout<<"numCoders "<<streamsData.pFolders[i].numCoders<<endl;
 
                     for(int j = 0;j < numCoders;j++){
-                        while(true){  // single need not this, but multiple needs !!!
+                        //while(true){  // single need not this, but multiple needs !!!
                         fread(buffer,1,1,pFile);
                         curPos = int(buffer[0]);
                         int b = curPos;
@@ -399,7 +408,7 @@ int ReadByPath(char *fp,CheckData *&pCd)
                         int methodSize = b & 0xf;
                         bool isSimple = ((b & 0x10) == 0);
                         bool noAttributes = ((b & 0x20) == 0);
-                        bool lastAlternative = ((b & 0x80) == 0);
+                        //bool lastAlternative = ((b & 0x80) == 0);
                         cout<<"methodSize "<<methodSize<<endl;
                         fread(buffer,1,methodSize,pFile);
 //                            curPos = int(buffer[0]);
@@ -407,19 +416,30 @@ int ReadByPath(char *fp,CheckData *&pCd)
                         for(int s = 0; s < methodSize;s++){
                             method += buffer[s] << ((methodSize - s - 1) * 8);
                         }
-                        cout<<"method "<<method<<endl;  // some probrems
+                        cout<<"method "<<method<<endl;  // some problems
                         coders[j].method = method;
-                        long minInstreams = 1, minOutstreams = 1;
+						if(method == 0x06f10701){
+							cout<<"AES coder"<<endl;
+							pCd->aesCode = true;
+						}
+						else if(method == 0x030101)
+						{
+							cout<<"LZMA coder"<<endl;
+							pCd->lzmaCode = true;
+						}
+						else{
+							cout<<"unknown coder"<<endl;
+						}
+        
+						UInt32 coderInStream = 1; 
                         if(!isSimple){
                             fread(buffer,1,1,pFile);
                             curPos = int(buffer[0]);
-                            minInstreams = readHandle64Bit(curPos,pBuff,pFile);
-                            fread(buffer,1,1,pFile);
-                            curPos = int(buffer[0]);
-                            minOutstreams = readHandle64Bit(curPos,pBuff,pFile);
+                            coderInStream = readHandle64Bit(curPos,pBuff,pFile);
+                          
                         }
-                        totalIn += minInstreams;
-                        totalOut += minOutstreams;
+						numInStream += coderInStream;
+                        
                         long propertiesSize = 0x00;
 
                         if(!noAttributes){
@@ -432,8 +452,17 @@ int ReadByPath(char *fp,CheckData *&pCd)
 #else
                             cout<<"properties:"<<get_b2hex(pBuff,propertiesSize)<<endl;
 #endif
-                            if(streamsData.pFolders[i].pCoders[i].propertiesSize != 0 ) continue;
-                            streamsData.pFolders[i].pCoders[i].propertiesSize = propertiesSize;
+							if (method == 0x030101)
+							{
+								pCd->propSize = propertiesSize;
+								pCd->props = new unsigned char[propertiesSize];
+								for (int temp = 0; temp < propertiesSize; temp ++)
+								{
+									pCd->props[temp] = buffer[temp];
+								}
+							}
+                            //if(streamsData.pFolders[i].pCoders[i].propertiesSize != 0 ) continue;
+                            streamsData.pFolders[i].pCoders[j].propertiesSize = propertiesSize;
                             streamsData.pFolders[i].pCoders[j].pProp = new unsigned char[propertiesSize];
                             for(int n = 0; n < propertiesSize; n++){
                                 streamsData.pFolders[i].pCoders[j].pProp[n] = buffer[n];
@@ -445,48 +474,42 @@ int ReadByPath(char *fp,CheckData *&pCd)
 //                                cout<<(int)streamsData.pFolders[i].pCoders[j].pProp[n]<<" ";
 //                            }
 //                            coders[j].properties = properties;
-                        if(lastAlternative) break;
-                        }/* end while (true)*/
+                        //if(lastAlternative) break;
+                        //}/* end while (true)*/
                     }
-                    folders[i].digestDefined = digestDefined;
-                    streamsData.totalOut = totalOut;
-                    folders[i].pCoders = coders;
-                    folders[i].numPackedStream = totalIn - totalOut + 1;
+					if (numCoders == 1 && numInStream == 1)
+					{
+						indexOfMainStream = 0; 
+						numPackStreams = 1;
+					}
+					else
+					{
+						UInt32 i;
+						UInt32 numBonds = numCoders - 1;
+						if (numInStream < numBonds)
+							cout<<"bonds unsupported"<<endl;
+						for (i = 0; i < numBonds; i++)
+						{
+							/*this  do not handle, just skip some two num*/
+							fread(buffer,1,1,pFile);
+							curPos = int(buffer[0]);
+							UInt32 index = readHandle64Bit(curPos,pBuff,pFile);
+							fread(buffer,1,1,pFile);
+							curPos = int(buffer[0]);
+							index = readHandle64Bit(curPos,pBuff,pFile);
 
-                    // i think these do not used !
-                    /*
-                    long numBindPairs = totalOut - 1;
-                    cout<<"numBindPairs "<<numBindPairs<<endl;
-                    long bindPairs[numBindPairs][2];
-                    for(int num = 0; num < numBindPairs;num++){
-                        fread(buffer,1,1,pFile);
-                        curPos = int(buffer[0]);
-                        bindPairs[num][0] = readHandle64Bit(curPos,pBuff,pFile);
-                        fread(buffer,1,1,pFile);
-                        curPos = int(buffer[0]);
-                        bindPairs[num][1] = readHandle64Bit(curPos,pBuff,pFile);
-                    }
-                    long numPackedStream = totalIn - numBindPairs;
-                    vector<long> packedIndexes;
-                    if(numPackedStream == 1){
-                        for(int num = 0;num < totalIn;num++){
-                            if(1){
-                                packedIndexes.push_back(i);
-                            }
-                        }
-                    }
-                    else if(numPackedStream > 1){
-                        for(int num = 0; num < numPackedStream;num++){
-                            fread(buffer,1,1,pFile);
-                            curPos = int(buffer[0]);
-                            packedIndexes.push_back(readHandle64Bit(curPos,pBuff,pFile));
-                        }
-                    }
-                    cout<<"size"<<packedIndexes.size()<<endl;
-                    for(int i = 0; i < packedIndexes.size();i++){
-                        cout<<"packedIndices"<<packedIndexes[i]<<endl;
-                    }
-                     */
+						}
+						 numPackStreams = numInStream - numBonds;
+						 if (numPackStreams != 1)
+							 for (i = 0; i < numPackStreams; i++)
+							 {
+								 cout<<"need to handle "<<endl;
+							 }
+
+					}
+                    folders[i].digestDefined = digestDefined;
+                    folders[i].pCoders = coders;
+
                 }
             }
             else if(curPos == 0x01){
@@ -511,17 +534,19 @@ int ReadByPath(char *fp,CheckData *&pCd)
 //                int numOfUnpacksizes = streamsData.totalOut - 1;
                 // it may not be totalOut in multi-file /multiple unpacksizes
                 int numOfUnpacksizes = streamsData.pFolders->numCoders;
-                // it may not be totalOut in multi-file /multiple unpacksizes
                 streamsData.pUnpackSizes = new long[numOfUnpacksizes];
+				pCd->pUnpackSize = new long[numOfUnpacksizes];
                 long *unpackSizes = streamsData.pUnpackSizes;
                 for(int num = 0;num < numOfUnpacksizes;num++){
                     fread(buffer,1,1,pFile);
                     curPos = int(buffer[0]);
                     unpackSizes[num] = readHandle64Bit(curPos,pBuff,pFile);
+					 pCd->pUnpackSize[num] = unpackSizes[num];
                     cout<<"unpackSizes "<<unpackSizes[num]<<endl;
-                    if(pCd->unpackSize == 0)
-                        pCd->unpackSize = unpackSizes[num];
+                    
                 }
+				
+				 //pCd->unpackSize = unpackSizes[numOfUnpacksizes];
             }/* if(curPos == CODER_UPACK_SIZE) */
             fread(buffer,1,1,pFile);
             curPos = int(buffer[0]);
@@ -545,10 +570,6 @@ int ReadByPath(char *fp,CheckData *&pCd)
         if(curPos == SUBSTEAMS_INFO){
 
         }
-//        cout<<"folder pointers "<<streamsData.pFolders[0].numCoders<<" "
-//        <<streamsData.pFolders[0].pCoders[0].method<<" "
-//        <<streamsData.pPackSizes[0]
-//        <<endl;
 
         k++;
     } /* end while(k < tailOffset) */
@@ -565,7 +586,7 @@ int ReadByPath(char *fp,CheckData *&pCd)
 
 //        fseek(pFile,streamsData.packPos,SEEK_SET);
         for(int idx = 0; idx < streamsData.numStreams;idx++){
-            long cipherLen = streamsData.pPackSizes[idx];
+            long cipherLen = streamsData.pPackSizes[idx + 1];
             unsigned char *cipher = new unsigned char[cipherLen];
             fread(cipher,1,cipherLen,pFile);
             cout<<"len: "<<cipherLen<<" cipher:\n";
@@ -582,8 +603,6 @@ int ReadByPath(char *fp,CheckData *&pCd)
 //        pCd->numCyclesPower = streamsData.pFolders[m].
 
     }
-//    cout<<"folder pointers out "<<streamsData.packPos<<"\t"<<streamsData.numFolders
-//    <<"\t"<<streamsData.pFolders[0].numCoders<<endl;
 
     int close = fclose(pFile);
     cout<<"file is close ? "<<close<<endl;// 成功返回0,否则 EOF(-1)
