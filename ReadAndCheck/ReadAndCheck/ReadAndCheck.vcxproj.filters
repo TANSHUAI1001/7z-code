@@ -15,35 +15,35 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\7zCryptographic\ReadArchiveFile.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\7zCryptographic\verification.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="Write2File.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="UDecode.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="MyLzma.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="MyString.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="verification.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="ReadArchiveFile.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="StringConvert.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="StdInStream.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="UTFConvert.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="StdOutStream.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="IntToString.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\7zCryptographic\Crc32.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\7zCryptographic\ReadProperties.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\7z1514-src\CPP\Common\Defs.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\7z1514-src\CPP\Common\MyBuffer.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="7zTypes.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -51,6 +51,69 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="MyLzma.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="StdOutStream.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="MyString.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="MyTypes.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="MyWindows.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="StringConvert.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="ReadProperties.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="MyVector.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Crc32.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="StdInStream.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="MyBuffer.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Defs.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="UTFConvert.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="IntToString.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="IDecl.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="IPassword.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="MyCom.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="NewHandler.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="IArchive.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="IProgress.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="IStream.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="PropID.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

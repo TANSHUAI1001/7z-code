@@ -142,10 +142,33 @@ bool MyLzmaUncompress(const char*scrfilename,unsigned char *&outbuff,size_t prop
 		printf("LzmaUncompress:%d\n",res);
 		fclose(fin);
 		//fclose(fout);
-		return true;
+		return false;
 	}
 	//fwrite(outbuff,1,saveoutsize,fout);
 	fclose(fin);
 	//fclose(fout);
+	return true;
+}
+bool MyLzmaUncompress2(unsigned char *CompleteBuff,unsigned char *&outbuff,size_t propsSize,
+					  unsigned char *props,int inSize,int outSize){
+	
+	size_t saveinsize = inSize;
+	size_t saveoutsize=saveinsize*1.1+1026*16;
+	unsigned char* inbuff=(unsigned char*)malloc(saveinsize);
+	size_t readlength=inSize;
+	for (int xx = 0; xx < readlength; xx++)
+	{
+		inbuff[xx] = CompleteBuff[xx];
+		cout<<hex<<(int)inbuff[xx]<<" ";
+	}
+	cout<<endl;
+	saveoutsize = outSize;
+	outbuff=(unsigned char*)malloc(saveoutsize);
+	int	res=LzmaUncompress(outbuff,&saveoutsize,inbuff,&readlength,
+		props,propsSize);
+	if(res!=0){
+		printf("LzmaUncompress:%d\n",res);
+		return false;
+	}
 	return true;
 }

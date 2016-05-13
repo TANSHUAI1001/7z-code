@@ -6,4 +6,6 @@ bool LzmaCompress(const char*scrfilename,const char*desfilename);
 bool LzmaUncompress(const char*scrfilename,const char*desfilename);
 extern bool MyLzmaUncompress(const char*scrfilename,unsigned char *&outBuff,size_t propsSize,
 					  unsigned char props,int inSize,int outSize);
+extern bool MyLzmaUncompress2(unsigned char *CompleteBuff,unsigned char *&outbuff,size_t propsSize,
+					   unsigned char *props,int inSize,int outSize);
 #endif

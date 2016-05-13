@@ -13,7 +13,7 @@ struct Coders{
     long numOutstream;
     long propertiesSize;
     unsigned char *pProp;
-	Coders():propertiesSize(0){};
+	Coders():propertiesSize(0),pProp(NULL){};
     ~Coders(){
         if(pProp){
             delete pProp;
@@ -27,11 +27,13 @@ struct Folders{
     Coders *pCoders;
     bool digestDefined;
     long numPackedStream;
+	Folders():pCoders(NULL){}
     ~Folders(){
-//        if(pCoders){
-//            delete pCoders;
-//            pCoders = NULL;
-//        }
+		pCoders = NULL;
+       /* if(pCoders){
+            delete pCoders;
+            pCoders = NULL;
+        }*/
     }
 };
 struct StreamsData{
@@ -47,15 +49,17 @@ struct StreamsData{
     Folders *pFolders;
     long dataStreamIdx;
 //    subStreams
+	StreamsData():pFolders(NULL),pPackInfoCrcs(NULL),pUnpackSizes(NULL),pPackSizes(NULL){}
     ~StreamsData(){
-//        if(pFolders){
-//            delete pFolders;
-//            pFolders = NULL;
-//        }
-//        if(pPackInfoCrcs){
-//            delete pPackInfoCrcs;
-//            pPackInfoCrcs = NULL;
-//        }
+		/*if(pFolders){
+			delete pFolders;
+			pFolders = NULL;
+		}*/
+		pFolders = NULL;
+		if(pPackInfoCrcs){
+			delete pPackInfoCrcs;
+			pPackInfoCrcs = NULL;
+		}
         if(pPackSizes){
             delete pPackSizes;
             pPackSizes = NULL;
@@ -68,7 +72,7 @@ struct StreamsData{
 };
 struct CheckData{
 	bool aesCode;
-    long *pUnpackSize;
+    long *pUnpackSize; // ++
     long numCyclesPower;
     long saltSize;
     std::string salt;
@@ -83,8 +87,22 @@ struct CheckData{
 	unsigned char *props;
 	int propSize;
 
-	CheckData():aesCode(false),lzmaCode(false){}
+	CheckData():aesCode(false),lzmaCode(false),pUnpackSize(NULL),iv(NULL),cipher(NULL),props(NULL){}
+	~CheckData(){
+		if(pUnpackSize){
+			delete pUnpackSize;
+			pUnpackSize = NULL;
+		}
+		iv = NULL;
+		cipher = NULL;
+		props = NULL;
+		/*if(iv) delete iv;
+		if(cipher) delete cipher;
+		if(props) delete props;*/
+	}
 };
 
 //#include "Crc32.h"
+
+
 #endif //INC_7ZCRYPTOGRAPHIC_READPROPERTIES_H

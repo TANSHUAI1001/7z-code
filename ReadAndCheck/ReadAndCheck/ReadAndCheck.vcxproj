@@ -81,20 +81,41 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\7zCryptographic\ReadArchiveFile.cpp" />
-    <ClCompile Include="..\..\7zCryptographic\verification.cpp" />
+    <ClCompile Include="IntToString.cpp" />
     <ClCompile Include="MyLzma.cpp" />
-    <ClCompile Include="UDecode.cpp" />
-    <ClCompile Include="Write2File.cpp" />
+    <ClCompile Include="MyString.cpp" />
+    <ClCompile Include="ReadArchiveFile.cpp" />
+    <ClCompile Include="StdInStream.cpp" />
+    <ClCompile Include="StdOutStream.cpp" />
+    <ClCompile Include="StringConvert.cpp" />
+    <ClCompile Include="UTFConvert.cpp" />
+    <ClCompile Include="verification.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\7z1514-src\CPP\Common\Defs.h" />
-    <ClInclude Include="..\..\..\7z1514-src\CPP\Common\MyBuffer.h" />
-    <ClInclude Include="..\..\7zCryptographic\Crc32.h" />
-    <ClInclude Include="..\..\7zCryptographic\ReadProperties.h" />
     <ClInclude Include="7zTypes.h" />
+    <ClInclude Include="Crc32.h" />
+    <ClInclude Include="Defs.h" />
+    <ClInclude Include="IArchive.h" />
+    <ClInclude Include="IDecl.h" />
+    <ClInclude Include="IntToString.h" />
+    <ClInclude Include="IPassword.h" />
+    <ClInclude Include="IProgress.h" />
+    <ClInclude Include="IStream.h" />
     <ClInclude Include="LzmaLib.h" />
+    <ClInclude Include="MyBuffer.h" />
+    <ClInclude Include="MyCom.h" />
     <ClInclude Include="MyLzma.h" />
+    <ClInclude Include="MyString.h" />
+    <ClInclude Include="MyTypes.h" />
+    <ClInclude Include="MyVector.h" />
+    <ClInclude Include="MyWindows.h" />
+    <ClInclude Include="NewHandler.h" />
+    <ClInclude Include="PropID.h" />
+    <ClInclude Include="ReadProperties.h" />
+    <ClInclude Include="StdInStream.h" />
+    <ClInclude Include="StdOutStream.h" />
+    <ClInclude Include="StringConvert.h" />
+    <ClInclude Include="UTFConvert.h" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="LzmaLib.lib" />

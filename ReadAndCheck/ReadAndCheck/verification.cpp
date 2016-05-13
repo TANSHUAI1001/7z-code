@@ -17,8 +17,19 @@ extern uint8_t * ConvertToBinBuf(const char* hex_str,size_t *buf_size);
 #endif 
 #include "Crc32.h"
 #include <fstream>
+#include "StdOutStream.h"
+#include "StdInStream.h"
+#include "MyBuffer.h"
+#include "MyCom.h"
+#include "MyString.h"
+#include "IPassword.h"
+#include "MyCom.h"
+#include "IArchive.h"
+#include "IPassword.h"
 extern bool MyLzmaUncompress(const char*scrfilename,unsigned char*&outBuff,size_t propsSize,
 							 unsigned char *props,int inSize,int outSize);
+extern bool MyLzmaUncompress2(unsigned char *CompleteBuff,unsigned char *&outbuff,size_t propsSize,
+							  unsigned char *props,int inSize,int outSize);
 
 typedef unsigned long uint64;
 typedef unsigned int uint32 ;
@@ -29,14 +40,14 @@ extern int ReadByPath(char *fp,CheckData *&pCd);
 CheckData cd;
 CheckData *pCd;
 
-void init(){
+int init(char path[]){
 	
 
 #ifdef _MSC_VER
 	//char path[] = "C:/Users/shuai/Desktop/fmt_main1.7z";
-	char path[] = "C:/Users/shuai/Desktop/LZMA_FileName_Password.7z";
+	//char path[] = "C:/Users/shuai/Desktop/LZMA_FileName_Password.7z";
 #else
-    char path[] = "/Users/shuai/Desktop/filesfor7z/LZMA_FileName_Password.7z";
+    char path[] = "/Users/shuai/Desktop/filesfor7z/Desktop0000.7z";
 #endif
 //    char path[] = "/Users/shuai/Desktop/filesfor7z/fmt_main1.7z";
 //    char path[] = "/Users/shuai/Desktop/filesfor7z/LZMA2_FileName_Password.7z";
@@ -47,7 +58,7 @@ void init(){
 	scanf("%s",pPath);
 	cout<<ReadByPath(pPath,pCd)<<endl;
 	*/
-    cout<<ReadByPath(path,pCd)<<endl;
+    return ReadByPath(path,pCd);
 
 //    return 0;
 }
@@ -63,17 +74,75 @@ void stringToUnicode(char *src, char *rst){
         rst[2*i + 1] = '\x00';
     }
 }
-void getTextPassword(char *&pwd, uint32 &pwdLen){
-    char password[20];
-    printf("input password:\n");
-    scanf("%s",password);
 
-//    pwdLen = strlen(password);
-    pwdLen = strlen(password) * 2;
-    pwd = (char *)malloc((pwdLen + 1)*(sizeof(char)));
-    stringToUnicode(password,pwd);
+UString GetPassword(CStdOutStream *outStream)
+{
+	if (outStream)
+	{
+		*outStream << "\nEnter password"
+#ifdef MY_DISABLE_ECHO
+			" (will not be echoed)"
+#endif
+			":";
+		outStream->Flush();
+	}
+
+#ifdef MY_DISABLE_ECHO
+
+	HANDLE console = GetStdHandle(STD_INPUT_HANDLE);
+	bool wasChanged = false;
+	DWORD mode = 0;
+	if (console != INVALID_HANDLE_VALUE && console != 0)
+		if (GetConsoleMode(console, &mode))
+			wasChanged = (SetConsoleMode(console, mode & ~ENABLE_ECHO_INPUT) != 0);
+	UString res = g_StdIn.ScanUStringUntilNewLine();
+	if (wasChanged)
+		SetConsoleMode(console, mode);
+	if (outStream)
+	{
+		*outStream << endl;
+		outStream->Flush();
+	}
+	return res;
+
+#else
+
+	return g_StdIn.ScanUStringUntilNewLine();
+
+#endif
 }
-void calculateDigest(char *pwd, uint32 pwdLen, uint8 *key, uint32 keyLen,CheckData *pCd){ // keyLen = 32
+
+void getTextPassword(unsigned char *&pwd, uint32 &pwdLen){
+    //char password[100];
+    //printf("input password:\n");
+    //scanf("%s",password);
+
+    //pwdLen = strlen(password) * 2;
+    //pwd = (char *)malloc((pwdLen + 1)*(sizeof(char)));
+    //stringToUnicode(password,pwd);
+
+	/*new input method*/
+	CStdOutStream *g_StdStream = NULL;
+	g_StdStream = &g_StdOut;
+	BSTR *passwd = NULL;
+	UString password;
+	ICryptoGetTextPassword *myGetTextPassword;
+	password = GetPassword(g_StdStream);
+	size_t len;
+	len = password.Len();
+	pwdLen = len * 2;
+	pwd = (unsigned char *)malloc((pwdLen + 1)*(sizeof(unsigned char)));
+	CByteBuffer buffer(len * 2);
+	for (size_t i = 0; i < len; i++)
+	{
+		wchar_t c = password[i];
+		((Byte *)buffer)[i * 2] = (Byte)c;
+		((Byte *)buffer)[i * 2 + 1] = (Byte)(c >> 8);
+		((Byte *)pwd)[i * 2] = (Byte)c;
+		((Byte *)pwd)[i * 2 + 1] = (Byte)(c >> 8);
+	}
+}
+void calculateDigest(unsigned char *pwd, uint32 pwdLen, uint8 *key, uint32 keyLen,CheckData *pCd){ // keyLen = 32
     SHA256_CTX ctx;
 
     SHA256_Init(&ctx);
@@ -95,9 +164,41 @@ void calculateDigest(char *pwd, uint32 pwdLen, uint8 *key, uint32 keyLen,CheckDa
     delete saltChar;
 }
 
-int main(){
-    init();
-    char *pwd;
+int main(int argc, char **argv){
+	/*for (int i = 0; i < argc;i++)
+	{
+		cout<<i<<"argv:"<<argv[i]<<endl;
+	}*/
+#ifdef _DEBUG //
+	char path[] = "C:/util/util_Pi.7z";
+	int Rf = init(path);
+#else
+	if(argc < 2){
+		cout<<"Usage:\tReadAndCheck <file_name> "<<endl;
+		return 0;
+	}
+	else if (argc > 2)
+	{
+		cout<<"Not correct use !"<<endl;
+		cout<<"Usage:\tReadAndCheck <file_name> \n Totally take 1 parameter !"<<endl;
+		return 0;
+	}
+
+	int Rf = init(argv[1]);
+#endif // DEBUG
+
+	
+	if (!Rf)
+	{
+		cout<<"Can not open file !"<<endl;
+		return 0;
+	}
+	if (!pCd->aesCode)
+	{
+		cout<<"Not support !"<<endl;
+		return 0;
+	}
+    unsigned char *pwd;
     uint32 pwdLen;
     int i = 0;
     getTextPassword(pwd,pwdLen);
@@ -113,7 +214,7 @@ int main(){
 
     printf("key:\n");
     for(i = 0; i < keyLen; i++){
-        printf("%.2x ",key[i]);
+        printf("%.2d ",key[i]);
     }
     printf("\n");
     uint8 *iv_arr = pCd->iv;
@@ -151,17 +252,18 @@ int main(){
         cout<<hex<<int(out[i])<<" ";
     }
     printf("\n");
-	printf("write to file !");
+	// 
+	/*printf("write to file !\n");
 	char desfilename[] = "C:/Users/shuai/Desktop/LZMA_TEMP";
 	FILE*fout=fopen(desfilename,"wb");
 	if(fout==NULL) printf("Open DesFile ERR:%s\n",desfilename);
 	fwrite(out,1,cipherLen,fout);
-	fclose(fout);
+	fclose(fout);*/
 
     int margin,nbytes,index;
-	cout<<"++++++++++++++++++++"<<pCd->pUnpackSize[0]<<endl;
+	/*cout<<"++++++++++++++++++++"<<pCd->pUnpackSize[0]<<endl;
 	cout<<"--------------------"<<cipherLen<<endl;
-	cout<<"++++++++++++++++++++"<<pCd->pUnpackSize[1]<<endl;
+	cout<<"++++++++++++++++++++"<<pCd->pUnpackSize[1]<<endl;*/
     margin = nbytes = cipherLen - pCd->pUnpackSize[0];
     index = cipherLen - 1;
     while(nbytes > 0){
@@ -191,7 +293,12 @@ int main(){
 	//if(0)
 	{
 		checkOutLength = pCd->pUnpackSize[1];
-		MyLzmaUncompress("C:/Users/shuai/Desktop/LZMA_TEMP",checkOut,pCd->propSize,pCd->props,pCd->pUnpackSize[0],pCd->pUnpackSize[1]);
+		/*int res = MyLzmaUncompress("C:/Users/shuai/Desktop/LZMA_TEMP",checkOut,pCd->propSize,pCd->props,pCd->pUnpackSize[0],pCd->pUnpackSize[1]);*/
+		int res = MyLzmaUncompress2(out,checkOut,pCd->propSize,pCd->props,pCd->pUnpackSize[0],pCd->pUnpackSize[1]);
+		if(!res){
+			cout<<"Not support !"<<endl;
+			return 0;
+		}
 		for (int kk = 0; kk < checkOutLength;kk++)
 		{
 			cout<<(int)checkOut[kk]<<" ";
@@ -213,13 +320,19 @@ int main(){
 	cout<<endl;
     CRC32_Init(&crc);
     CRC32_Update(&crc,checkOut,checkOutLength);
-//    CRC32_Update(&crc,out,pCd->unpackSize);
-//    CRC32_Update(&crc,cipher,pCd->unpackSize);
     CRC32_Final(crc_out,crc);
     cout<<"pCd->unpackSize "<<pCd->pUnpackSize[0]<<endl;
     crcc = _crc_out.crci;
     cout<<hex<<"crc "<<crcc<<" pcd->crc "<<pCd->crc<<endl;
-    cout<<"compare CRC :"<<(crcc == pCd->crc)<<endl;
+	bool com = (crcc == pCd->crc);
+    cout<<"compare CRC :"<<com<<endl;
+	if (com)
+	{
+		cout<<"Right password !"<<endl;
+	}
+	else{
+		cout<<"Wrong password !"<<endl;
+	}
     /*
      * end 7z_fmt_plug
      */
@@ -230,6 +343,8 @@ int main(){
     delete iv_arr;
     delete cipher;
     delete pwd;
+#ifdef _DEBUG
 	system("pause");
+#endif // DEBUG
     return 0;
 }
